@@ -1,6 +1,7 @@
 
 module Biobase.Newick.Types where
 
+import Data.Monoid
 import Data.Text (Text)
 
 
