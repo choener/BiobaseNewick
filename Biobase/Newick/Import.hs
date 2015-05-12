@@ -16,7 +16,10 @@ import Biobase.Newick.Types
 type PNT = Parser NewickTree
 
 newicksFromFile :: FilePath -> IO (Either String [NewickTree])
-newicksFromFile f = A.parseOnly manyNewick <$> T.readFile f
+newicksFromFile f = newicksFromText <$> T.readFile f
+
+newicksFromText :: Text -> Either String [NewickTree]
+newicksFromText = A.parseOnly manyNewick
 
 manyNewick = many (newick <* A.skipSpace) <* A.endOfInput
 
