@@ -1,19 +1,20 @@
 
 module Biobase.Newick.Import where
 
-import           Data.Text (Text)
-import qualified Data.Attoparsec.Text as A
-import           Data.Attoparsec.Text (Parser,(<?>))
 import           Control.Applicative
+import           Data.Attoparsec.Text (Parser,(<?>))
 import           Data.Char (isAlpha)
-import qualified Data.Text.IO as T
+import           Data.Text (Text)
+import           Data.Tree
+import qualified Data.Attoparsec.Text as A
 import qualified Data.Text as T
+import qualified Data.Text.IO as T
 
 import Biobase.Newick.Types
 
 
 
-type PNT = Parser NewickTree
+type PNT = Parser (Tree Info)
 
 newicksFromFile :: FilePath -> IO (Either String [NewickTree])
 newicksFromFile f = newicksFromText <$> T.readFile f
@@ -23,28 +24,31 @@ newicksFromText = A.parseOnly manyNewick
 
 manyNewick = many (newick <* A.skipSpace) <* A.endOfInput
 
-newick :: PNT
-newick = tree <* ";" <?> "newick"
+newick :: Parser NewickTree
+newick = NewickTree <$> tree <* ";" <?> "newick"
 
 tree :: PNT
 tree = A.skipSpace *> (branched <|> leaf) <?> "tree"
 
 branched :: PNT
-branched = NNode <$ "(" <*> tree `A.sepBy1` "," <* ")" <*> name <*> plength <?> "branched"
+branched = flip Node <$ "(" <*> tree `A.sepBy1` "," <* ")" <*> info <?> "branched"
 
 leaf :: PNT
-leaf = NLeaf <$> name <*> plength <?> "leaf"
+leaf = (flip Node []) <$> info <?> "leaf"
+
+info :: Parser Info
+info = Info <$> name <*> plength
 
 name :: Parser Text
 name = A.takeWhile accept <?> "name"
   where accept a = isAlpha a || A.inClass "_." a || A.isHorizontalSpace a
 
-plength :: Parser NewickLength
-plength = (Len <$ ":" <*> A.double) <|> pure NoLen <?> "plength"
+plength :: Parser Double
+plength = ":" *> A.double <|> pure 0 <?> "plength"
 
 
-
-test = mapM_ (\x -> print (A.parseOnly manyNewick x) >> putStrLn "")
+{-
+test = mapM_ (\x -> (either error (putStr . drawTree . fmap show . head . map getNewickTree) $ A.parseOnly manyNewick x) >> putStrLn "\n\n\n")
         [ "B:0.2;"
         , "A;"
         , ";"
@@ -56,4 +60,5 @@ test = mapM_ (\x -> print (A.parseOnly manyNewick x) >> putStrLn "")
         , "((A,B),(C,D));"
         , "(Alpha,Beta,Gamma,Delta,,Epsilon,,,);"
         ]
+-}
 

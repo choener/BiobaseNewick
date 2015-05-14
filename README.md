@@ -2,7 +2,12 @@
 
 # BiobaseNewick
 
-This is a simple parser for the Newick tree format.
+This is a simple parser for Newick trees. The parser returns a rose tree. Each
+node is labelled with the node name (or an empty string for anonymous nodes)
+and a distance (0 if not given).
+
+Newick trees can be ex- and imported into the Newick tree format. We also have
+serialization to the usual serializers.
 
 This package was written mostly to complement a course a Univ. Leipzig. There
 is a more comprehensive package written by R. Newton

@@ -1,57 +1,60 @@
 
 module Biobase.Newick.Types where
 
-import Data.Monoid
-import Data.Text (Text)
-import Test.QuickCheck
 import Control.Monad
+import Data.Aeson (FromJSON,ToJSON)
+import Data.Binary (Binary)
+import Data.Monoid
+import Data.Serialize (Serialize)
+import Data.Serialize.Text
+import Data.Text.Binary
+import Data.Text (Text)
+import Data.Tree
+import GHC.Generics
+import Test.QuickCheck
 
 
 
-data NewickLength
-  = Len { len :: {-# Unpack #-} !Double }
-  | NoLen
-  deriving (Eq,Ord,Show,Read)
+-- | Node and leaf information in Newick trees.
 
-instance Monoid NewickLength where
-  mempty = NoLen
-  mappend (Len a) (Len b) = Len $ a+b
-  mappend (Len a) _       = Len a
-  mappend _       (Len b) = Len b
-  mappend _       _       = NoLen
-  {-# Inline mempty  #-}
-  {-# Inline mappend #-}
+data Info = Info
+  { label     :: Text
+  , distance  :: Double
+  } deriving (Eq,Show,Generic)
 
-data NewickTree
-  = NLeaf { label     :: {-# Unpack #-} !Text
-          , nlength   :: !NewickLength
-          }
-  | NNode { children  :: [NewickTree]
-          , label     :: {-# Unpack #-} !Text
-          , nlength   :: !NewickLength
-          }
-  deriving (Eq,Ord,Show,Read)
+instance Binary    Info
+instance Serialize Info
+instance FromJSON  Info
+instance ToJSON    Info
+
+instance Arbitrary Info where
+  arbitrary = Info <$> pure "" <*> (maybe 0 getPositive <$> arbitrary)
+  shrink (Info lbl d)
+    | d == 0    = []
+    | otherwise = [Info lbl 0]
 
 
 
-instance Arbitrary NewickLength where
-  arbitrary = maybe NoLen Len <$> arbitrary
-  shrink NoLen   = []
-  shrink (Len _) = [NoLen]
+-- | Newick tree newtype wrapper.
+
+newtype NewickTree = NewickTree { getNewickTree :: Tree Info }
+  deriving (Eq,Show,Generic)
+
+instance Binary    NewickTree
+instance Serialize NewickTree
+instance FromJSON  NewickTree
+instance ToJSON    NewickTree
 
 instance Arbitrary NewickTree where
-  arbitrary = sized arbNewickTree
-  shrink (NLeaf    lbl len) = map (NLeaf lbl) $ shrink len
-  shrink (NNode cs lbl len) = [NNode ds lbl ln | ds <- shrink cs, ln <- shrink len]
+  arbitrary = NewickTree <$> sized arbNewickTree
+  shrink (NewickTree (Node lbl [])) = [NewickTree (Node l []) | l <- shrink lbl]
+  shrink (NewickTree (Node lbl cs)) = [NewickTree (Node l ds) | l <- shrink lbl
+                                                              , ds <- map (map getNewickTree) . shrink $ map NewickTree cs]
 
--- empty (root only) tree
-arbNewickTree 0 = NNode [] "" <$> arbitrary
--- single leaf
-arbNewickTree 1 = NLeaf "" <$> arbitrary
--- recursive tree
+arbNewickTree 0 = Node <$> arbitrary <*> pure []
 arbNewickTree k = do
   n  <- choose (0,5)
-  ds <- replicateM n $ choose (1,k-1)
+  ds <- replicateM n $ choose (0,k-1)
   cs <- mapM arbNewickTree ds
-  NNode cs "" <$> arbitrary
+  Node <$> arbitrary <*> pure cs
 
