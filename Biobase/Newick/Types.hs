@@ -1,6 +1,7 @@
 
 module Biobase.Newick.Types where
 
+import Control.Applicative
 import Control.Monad
 import Data.Aeson (FromJSON,ToJSON)
 import Data.Binary (Binary)
