@@ -54,6 +54,34 @@ library
 
 
 
+-- A small helper that turns a Newick tree in a diagram.
+
+executable Newick-diagrams
+  build-depends: base
+               , BiobaseNewick
+               , cmdargs              >= 0.10   && < 0.11
+               , diagrams             >= 1.3    && < 1.4
+               , diagrams-postscript  >= 1.3    && < 1.4
+               , diagrams-rasterific  >= 1.3    && < 1.4
+  hs-source-dirs:
+    src
+  main-is:
+    diagram.hs
+  default-language:
+    Haskell2010
+  default-extensions: BangPatterns
+                    , FlexibleContexts
+                    , FlexibleInstances
+                    , MultiParamTypeClasses
+                    , RecordWildCards
+                    , TemplateHaskell
+                    , TypeFamilies
+                    , TypeOperators
+  ghc-options:
+    -O2
+
+
+
 test-suite properties
   type:
     exitcode-stdio-1.0
