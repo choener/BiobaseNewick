@@ -4,13 +4,14 @@ License:        BSD3
 License-file:   LICENSE
 Author:         Christian Hoener zu Siederdissen
 Maintainer:     choener@bioinf.uni-leipzig.de
-Copyright:      Christian Hoener zu Siederdissen, 2015
+Copyright:      Christian Hoener zu Siederdissen, 2015-2016
 Homepage:       https://github.com/choener/BiobaseNewick
 bug-reports:    https://github.com/choener/BiobaseNewick/issues
 Stability:      Experimental
 Category:       Bioinformatics
 Build-type:     Simple
 Cabal-version:  >= 1.10
+tested-with:    GHC == 7.10.3
 Synopsis:       Newick file format parser.
 Description:
                 This is a simple parser for Newick trees. The parser returns a
@@ -18,7 +19,7 @@ Description:
                 empty string for anonymous nodes) and a distance (0 if not
                 given).
                 .
-                <https://github.com/choener/BiobaseNewick/blob/master/README.md>
+                Includes conversion to an efficient static forest.
 
 extra-source-files:
   changelog.md
@@ -31,25 +32,29 @@ library
     Biobase.Newick
     Biobase.Newick.Export
     Biobase.Newick.Import
+    Biobase.Newick.StaticForest
     Biobase.Newick.Types
 
-  -- 4.7.0.0 is ghc 7.8.1; 4.8.0.0 is ghc 7.10.1
-  build-depends: base                     >= 4.7      && < 4.9
-               , aeson                    >= 0.8      && < 0.11
-               , attoparsec               >= 0.12     && < 0.14
-               , binary                   >= 0.7      && < 0.8
-               , cereal                   >= 0.4      && < 0.5
-               , cereal-text              >= 0.1.0    && < 0.1.1
-               , containers               >= 0.5      && < 0.6
-               , QuickCheck               >= 2.7      && < 2.9
-               , text                     >= 1.2      && < 1.3
-               , text-binary              >= 0.1.0    && < 0.2.2
+  build-depends: base                     >= 4.7      &&  < 4.9
+               , aeson                    >= 0.8      &&  < 0.11
+               , attoparsec               >= 0.12     &&  < 0.14
+               , binary                   >= 0.7      &&  < 0.8
+               , cereal                   >= 0.4      &&  < 0.5
+               , cereal-text              >= 0.1.0    &&  < 0.1.1
+               , containers               >= 0.5      &&  < 0.6
+               , fgl                      >= 5.5      &&  < 6.0
+               , ForestStructures         >= 0.0.0    &&  < 0.0.1
+               , QuickCheck               >= 2.7      &&  < 2.9
+               , text                     >= 1.2      &&  < 1.3
+               , text-binary              >= 0.1.0    &&  < 0.2.2
+               , vector                   >= 0.10     &&  < 0.12
   ghc-options:
     -O2
     -funbox-strict-fields
   default-language:
     Haskell2010
   default-extensions: DeriveGeneric
+                    , DataKinds
                     , OverloadedStrings
 
 
