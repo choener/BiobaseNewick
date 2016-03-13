@@ -1,16 +1,10 @@
-resolver: lts-4.0
+resolver: lts-5.2
 
 packages:
 - '.'
-- location: ../Lib-ForestStructures/
-  extra-dep: true
 
 extra-deps:
-- aeson-0.10.0.0
-- attoparsec-0.13.0.1
 - cereal-text-0.1.0.1
 - ForestStructures-0.0.0.1
 - OrderedBits-0.0.1.0
-- vector-0.11.0.0
-- vector-th-unbox-0.2.1.3
 

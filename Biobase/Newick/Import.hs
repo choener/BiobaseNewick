@@ -1,4 +1,10 @@
 
+-- |
+--
+-- NOTE We need to make sure to be compatible to everything here:
+-- @http://evolution.genetics.washington.edu/phylip/newicktree.html@ In
+-- particular, we do not do any conversion from @_@ to @(space)@ right now.
+
 module Biobase.Newick.Import where
 
 import           Control.Applicative
@@ -22,7 +28,7 @@ newicksFromFile f = newicksFromText <$> T.readFile f
 newicksFromText :: Text -> Either String [NewickTree]
 newicksFromText = A.parseOnly manyNewick
 
-manyNewick = many (newick <* A.skipSpace) <* A.endOfInput
+manyNewick = some (newick <* A.skipSpace) <* A.endOfInput
 
 newick :: Parser NewickTree
 newick = NewickTree <$> tree <* ";" <?> "newick"
@@ -37,11 +43,20 @@ leaf :: PNT
 leaf = (flip Node []) <$> info <?> "leaf"
 
 info :: Parser Info
-info = Info <$> name <*> plength
+info = Info <$> name <*> plength <?> "info"
+
+-- |
+--
+-- NOTE http://evolution.genetics.washington.edu/phylip/newicktree.html
+--
+-- A name can be any string of printable characters except blanks, colons,
+-- semicolons, parentheses, and square brackets.
+--
+-- I am excluding commas as well.
 
 name :: Parser Text
 name = A.takeWhile accept <?> "name"
-  where accept a = isAlpha a || A.inClass "_." a || A.isHorizontalSpace a
+  where accept a = not $ A.isHorizontalSpace a || A.inClass ",:;()[]" a -- isAlpha a || A.inClass "_." a || A.isHorizontalSpace a
 
 plength :: Parser Double
 plength = ":" *> A.double <|> pure 0 <?> "plength"
