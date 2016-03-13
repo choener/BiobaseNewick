@@ -47,12 +47,13 @@ instance FromJSON  NewickTree
 instance ToJSON    NewickTree
 
 instance Arbitrary NewickTree where
-  arbitrary = NewickTree <$> sized arbNewickTree
+  arbitrary = NewickTree <$> (arbNewickTree =<< (getSmall <$> arbitrary))
   shrink (NewickTree (Node lbl [])) = [NewickTree (Node l []) | l <- shrink lbl]
   shrink (NewickTree (Node lbl cs)) = [NewickTree (Node l ds) | l <- shrink lbl
                                                               , ds <- map (map getNewickTree) . shrink $ map NewickTree cs]
 
-arbNewickTree 0 = Node <$> arbitrary <*> pure []
+arbNewickTree :: Int -> Gen (Tree Info)
+arbNewickTree k | k<=0 = Node <$> arbitrary <*> pure []
 arbNewickTree k = do
   n  <- choose (0,5)
   ds <- replicateM n $ choose (0,k-1)
