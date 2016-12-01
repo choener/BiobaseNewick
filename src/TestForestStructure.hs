@@ -23,7 +23,7 @@ oOptions = Options
 
 main = do
   Options{..} <- cmdArgs oOptions
-  let input = "../Lib-ADPfusionForest/examples/t6.nwk"
+  let input = "../Lib-ADPfusionForest/examples/t7.nwk"
   ft <- T.readFile input
   T.putStrLn ft
   ns <- newicksFromFile input
