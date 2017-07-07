@@ -11,7 +11,7 @@ Stability:      Experimental
 Category:       Bioinformatics
 Build-type:     Simple
 Cabal-version:  >= 1.10
-tested-with:    GHC == 7.10.3, GHC == 8.0.1
+tested-with:    GHC == 7.10.3, GHC == 8.0.1, GHC == 8.0.2
 Synopsis:       Newick file format parser.
 Description:
                 This is a simple parser for Newick trees. The parser returns a
