@@ -4,7 +4,7 @@ License:        BSD3
 License-file:   LICENSE
 Author:         Christian Hoener zu Siederdissen
 Maintainer:     choener@bioinf.uni-leipzig.de
-Copyright:      Christian Hoener zu Siederdissen, 2015-2016
+Copyright:      Christian Hoener zu Siederdissen, 2015-2017
 Homepage:       https://github.com/choener/BiobaseNewick
 bug-reports:    https://github.com/choener/BiobaseNewick/issues
 Stability:      Experimental
@@ -20,6 +20,8 @@ Description:
                 given).
                 .
                 Includes conversion to an efficient static forest.
+
+
 
 extra-source-files:
   changelog.md

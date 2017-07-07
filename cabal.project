@@ -1,3 +1,5 @@
 packages: .
-          ../Lib-ForestStructures
+--          ../Lib-ForestStructures
+
+optional-packages: ./*/*.cabal
 
