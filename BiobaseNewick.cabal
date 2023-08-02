@@ -50,7 +50,7 @@ library
                , text-binary              >= 0.1.0
                , vector                   >= 0.10
                --
-               , ForestStructures         == 0.0.0.*
+               , ForestStructures         >=0.0.0 && <0.0.2
   ghc-options:
     -O2
     -funbox-strict-fields
